@@ -1,0 +1,2164 @@
+COMPREHENSIVE PROJECT SPECIFICATION FOR REPLIT AI
+================================================
+
+PROJECT NAME: PromptCraft AI
+OBJECTIVE: Build a complete, professional full-stack web application that helps users create, optimize, and manage AI prompts for different content types (images, videos, websites, code, text, audio, presentations).
+
+========================================
+CORE CONCEPT
+========================================
+
+Create an intelligent prompt engineering assistant that connects to multiple AI APIs (ChatGPT, Gemini, Claude) and uses best practices from each platform to generate optimized, detailed prompts. The app should function as an expert prompt engineer - similar to how ChatGPT helps create prompts, but specialized and optimized for various platforms and content types.
+
+========================================
+TECHNICAL STACK
+========================================
+
+Frontend:
+- React 18+ with TypeScript
+- Tailwind CSS for styling
+- shadcn/ui component library
+- React Router for navigation
+- Framer Motion for animations
+- Lucide React for icons
+
+Backend:
+- Node.js with Express
+- Replit Database (key-value store)
+- Replit Auth for authentication
+
+AI APIs:
+- OpenAI GPT-4/GPT-4o API
+- Google Gemini API
+- Anthropic Claude API
+
+Voice Input:
+- Web Speech API (browser native)
+- OpenAI Whisper API (fallback)
+
+========================================
+PROJECT STRUCTURE
+========================================
+
+/client
+  /src
+    /components
+      /layout (Header, Footer, Sidebar, Navigation)
+      /auth (Login, Register, ProtectedRoute)
+      /dashboard (DashboardHome, StatsCard, ActivityFeed)
+      /prompt-creator (CategorySelector, InputMode, AISelector, OutputDisplay, RefinementChat)
+      /prompt-history (HistoryList, HistoryItem, FilterBar, SearchBar)
+      /templates (TemplateGallery, TemplateCard, TemplateDetail)
+      /knowledge-base (ArticleList, ArticleDetail, SearchableContent)
+      /settings (Profile, APIKeys, Preferences, Billing)
+      /shared (Button, Card, Input, Modal, Toast, Loading, ErrorBoundary)
+    /contexts
+      - AuthContext.tsx
+      - PromptContext.tsx
+      - ThemeContext.tsx
+    /hooks
+      - usePrompt.ts
+      - useVoice.ts
+      - useAPI.ts
+      - useDatabase.ts
+    /utils
+      - formatters.ts
+      - validators.ts
+      - apiHelpers.ts
+      - constants.ts
+    /types
+      - index.ts (all TypeScript definitions)
+    /services
+      - openai.service.ts
+      - gemini.service.ts
+      - claude.service.ts
+      - storage.service.ts
+
+/server
+  /routes
+    - auth.routes.js
+    - prompts.routes.js
+    - templates.routes.js
+    - api.routes.js
+  /middleware
+    - auth.middleware.js
+    - rateLimiter.middleware.js
+    - errorHandler.middleware.js
+  /controllers
+    - prompt.controller.js
+    - user.controller.js
+    - template.controller.js
+  /services
+    - openai.service.js
+    - gemini.service.js
+    - claude.service.js
+    - database.service.js
+
+========================================
+DETAILED FEATURE SPECIFICATIONS
+========================================
+
+1. AUTHENTICATION & USER MANAGEMENT
+-----------------------------------
+
+Implement using Replit Auth:
+
+User Profile Fields:
+- id (unique)
+- username
+- email
+- plan (free/premium)
+- apiKeys: { openai, gemini, claude }
+- preferences: { defaultAI, defaultModel, theme, language }
+- stats: { totalPrompts, favoriteCount, createdAt }
+- createdAt (timestamp)
+
+User Plans:
+- FREE TIER:
+  * 50 prompts per month
+  * 5 prompts per day
+  * Access to basic templates (30)
+  * 30-day history retention
+  * Single AI engine at a time
+  
+- PREMIUM TIER:
+  * Unlimited prompts
+  * All templates (100+)
+  * Unlimited history
+  * Priority API access
+  * Advanced refinement
+  * A/B comparison mode
+  * Community features
+  * Export options
+
+2. DASHBOARD (Home Page)
+------------------------
+
+Layout Components:
+
+HEADER:
+- Logo (PromptCraft AI with icon)
+- Navigation menu: Dashboard, Create, Templates, History, Learn, Settings
+- User profile dropdown
+- Theme toggle (light/dark)
+- Notifications bell
+
+SIDEBAR (collapsible):
+- Quick Actions:
+  * New Prompt (button with + icon)
+  * Browse Templates
+  * View History
+- User Stats Card:
+  * Prompts Created Today
+  * This Week
+  * This Month
+  * Favorite Count
+- Quick Links:
+  * Most Used Categories
+  * Recent Prompts
+  * Saved Templates
+
+MAIN CONTENT AREA:
+- Welcome message with user name
+- Stats Cards (grid layout):
+  * Total Prompts Created (with icon)
+  * Favorite Prompts (with icon)
+  * Templates Used (with icon)
+  * Success Rate (with percentage)
+- Recent Activity Feed:
+  * Last 5 prompts with preview
+  * Click to view details
+- Popular Community Prompts (Premium):
+  * Trending prompts from other users
+  * Rating and usage count
+- Quick Start Guide (for new users):
+  * Interactive tutorial
+  * Sample prompts to try
+
+3. PROMPT CREATOR - MAIN FEATURE
+--------------------------------
+
+This is the core of the application. Implement as a multi-step wizard:
+
+STEP 1: CATEGORY SELECTION
+---------------------------
+Display as attractive cards with icons and descriptions:
+
+Categories:
+1. 🎨 IMAGE GENERATION
+   - For: DALL-E, Midjourney, Stable Diffusion, Leonardo AI
+   - Best for: Photos, illustrations, art, logos, concepts
+   
+2. 🎬 VIDEO CREATION
+   - For: Runway ML, Pika Labs, Gen-2, Synthesia
+   - Best for: Animations, commercials, explainers, tutorials
+   
+3. 🌐 WEBSITE DEVELOPMENT
+   - For: v0.dev, Replit Agent, Cursor AI
+   - Best for: Landing pages, apps, portfolios, e-commerce
+   
+4. 💻 CODE GENERATION
+   - For: GitHub Copilot, ChatGPT, Claude, Cursor
+   - Best for: Functions, APIs, algorithms, scripts
+   
+5. ✍️ TEXT CREATION
+   - For: ChatGPT, Claude, Gemini
+   - Best for: Articles, blogs, emails, scripts, copy
+   
+6. 🎵 AUDIO/MUSIC GENERATION
+   - For: Suno AI, MusicGen, ElevenLabs
+   - Best for: Songs, voiceovers, sound effects
+   
+7. 📊 PRESENTATIONS
+   - For: Gamma, Tome, Canva AI
+   - Best for: Slideshows, pitch decks, educational content
+   
+8. 🎯 MARKETING/ADVERTISING
+   - For: Copy.ai, Jasper, ChatGPT
+   - Best for: Ads, landing pages, email campaigns
+   
+9. 📚 EDUCATION
+   - For: ChatGPT, Claude, Gemini
+   - Best for: Lesson plans, quizzes, study guides
+   
+10. 🔧 OTHER/CUSTOM
+    - Custom category for specialized needs
+
+Each card should:
+- Have a large icon
+- Clear title
+- Brief description
+- "Select" button
+- Hover effect with elevation
+
+STEP 2: IDEA INPUT
+------------------
+Provide THREE input modes with tabs:
+
+MODE 1: TEXT INPUT
+- Large expandable textarea (minimum 5 rows)
+- Character counter (show current/recommended)
+- Real-time suggestions as user types
+- Auto-detect language (PT/EN/ES)
+- Placeholder text with example
+- Clear button
+
+MODE 2: VOICE INPUT
+- Large microphone button with animation
+- Visual waveform during recording
+- Real-time transcription display
+- Support for multiple languages
+- Controls: Start, Pause, Resume, Stop
+- Audio quality indicator
+- Edit transcription before submitting
+- Play back recording option
+
+MODE 3: FILE UPLOAD
+- Drag & drop area
+- Support: PDF, DOCX, TXT, PNG, JPG
+- File preview
+- Extract text/context automatically
+- Multiple file support
+- Size limit indicator (max 10MB per file)
+
+ADDITIONAL INPUT FIELDS (expandable section):
+- Desired Style: Dropdown (Professional, Casual, Technical, Creative, Minimalist, Bold, Vintage, Modern)
+- Target Audience: Text input (e.g., "Young professionals", "Tech enthusiasts")
+- Specific Requirements: Textarea (what must be included)
+- Exclusions: Textarea (what to avoid)
+- Tone of Voice: Dropdown (Formal, Friendly, Authoritative, Playful, Inspirational)
+- Length/Duration: Input (for videos/text)
+- Color Palette: Color picker (for visual content)
+- Reference Links: URL inputs (inspiration/examples)
+
+STEP 3: AI ENGINE SELECTION
+---------------------------
+Display as comparison cards:
+
+OPENAI (GPT-4/GPT-4o):
+- Logo and brand colors
+- Strengths:
+  * Best for creative content
+  * Excellent at understanding context
+  * Strong few-shot learning
+  * Great for conversational prompts
+- Best For: Text, code, general prompts
+- Model Selection: GPT-4, GPT-4o, GPT-3.5-turbo
+- Speed: Fast ⚡⚡⚡
+- Cost: $$ (show estimate)
+- "Select" button
+
+GOOGLE GEMINI:
+- Logo and brand colors
+- Strengths:
+  * Multimodal capabilities
+  * Fast processing
+  * Good at structured output
+  * Strong reasoning
+- Best For: Complex analysis, multimodal content
+- Model Selection: Gemini 1.5 Pro, Gemini 1.5 Flash
+- Speed: Very Fast ⚡⚡⚡⚡
+- Cost: $ (show estimate)
+- "Select" button
+
+ANTHROPIC CLAUDE:
+- Logo and brand colors
+- Strengths:
+  * Excellent at detailed instructions
+  * Best for long-form content
+  * Superior at following constraints
+  * Constitutional AI principles
+- Best For: Detailed prompts, safety-critical content
+- Model Selection: Claude 3.5 Sonnet, Claude 3 Opus
+- Speed: Fast ⚡⚡⚡
+- Cost: $$ (show estimate)
+- "Select" button
+
+MULTI-AI COMPARISON (Premium):
+- Toggle to enable
+- Generate with all 3 AIs simultaneously
+- Compare results side-by-side
+- Vote for best result
+- Combine best parts into hybrid prompt
+
+ADVANCED SETTINGS (collapsible panel):
+For power users who want fine control:
+- Temperature: Slider (0.0 - 2.0)
+  * Lower = more focused and deterministic
+  * Higher = more creative and random
+- Max Tokens: Input (100-4000)
+- Top P: Slider (0.0 - 1.0)
+- Frequency Penalty: Slider (-2.0 - 2.0)
+- Presence Penalty: Slider (-2.0 - 2.0)
+- System Prompt Override: Textarea (for experts)
+
+STEP 4: GENERATION & REFINEMENT
+-------------------------------
+Split-screen layout:
+
+LEFT PANEL - INPUT SUMMARY:
+- Category badge
+- Input text preview (first 200 chars)
+- Selected AI engine with icon
+- Settings summary (collapsible)
+- Quick edit button (go back to step 2)
+- Regenerate with different AI button
+
+RIGHT PANEL - OUTPUT DISPLAY:
+Main Prompt Card:
+- Generated prompt in code-style box
+- Syntax highlighting
+- Line numbers
+- Copy button (with tooltip "Copied!")
+- Full-screen view button
+
+Quality Indicators (below prompt):
+Display as progress bars or circular indicators:
+1. COMPLETENESS: 0-100%
+   - Checks if all essential info is included
+   - Color: Red (<60%), Yellow (60-80%), Green (>80%)
+   
+2. SPECIFICITY: 0-100%
+   - Measures clarity and detail level
+   - Analyzes use of concrete vs vague terms
+   
+3. STRUCTURE: 0-100%
+   - Evaluates organization and formatting
+   - Checks for sections, delimiters, examples
+   
+4. PLATFORM COMPATIBILITY: 0-100%
+   - Matches best practices for target platform
+   - Validates format and style
+
+Overall Score: Average of above (large, prominent display)
+
+ACTION BUTTONS (icon buttons with labels):
+- 📋 Copy to Clipboard
+- ⭐ Save as Favorite (filled star if already favorite)
+- 🔄 Regenerate (with adjustments)
+- ✏️ Edit Manually (opens text editor)
+- 🚀 Test with API (actually call the AI with this prompt)
+- 📤 Export (dropdown: TXT, JSON, Markdown, PDF)
+- 🔗 Share Link (generate shareable URL)
+- 📊 Analyze Quality (detailed breakdown)
+- 💾 Save to History (auto-saved, but can add notes)
+
+REFINEMENT CHAT (below action buttons):
+Interactive chat interface for iterative improvement:
+- Chat input: "How can I improve this prompt?"
+- Suggested refinements as quick buttons:
+  * "Make it more specific"
+  * "Add examples"
+  * "Change tone to [X]"
+  * "Include more details about [Y]"
+  * "Simplify language"
+  * "Add constraints"
+- AI responds with specific suggestions
+- User can accept/reject suggestions
+- Version history: Show all iterations
+- Diff view: Highlight what changed between versions
+- Rollback button: Return to previous version
+
+VERSION HISTORY SIDEBAR:
+- Timeline view of all iterations
+- Click to preview
+- Compare any two versions
+- Restore previous version
+- Export specific version
+
+4. TEMPLATE LIBRARY
+-------------------
+
+Gallery View Options:
+- Grid view (cards)
+- List view (compact)
+- Filter by:
+  * Category
+  * Popularity (most used)
+  * Rating (community rated)
+  * Date added (newest first)
+  * My favorites
+  * Created by me
+  * Public vs Private
+
+Search Bar:
+- Full-text search
+- Tag search
+- Author search
+- Real-time filtering
+
+Template Card Design:
+- Thumbnail/icon for category
+- Template name
+- Brief description (50 chars)
+- Category badges
+- Rating (stars) with count
+- Usage count
+- Author name/avatar
+- "Use Template" button
+- "Preview" button (hover/click)
+- "Favorite" icon toggle
+
+Template Detail View (modal or full page):
+- Full template content with syntax highlighting
+- Variable placeholders highlighted: {{variable_name}}
+- Description and usage instructions
+- Example outputs
+- Author info
+- Tags
+- Community ratings and reviews
+- Related templates
+- "Use This Template" primary button
+- "Customize" button (opens editor)
+- "Fork Template" (create your own version)
+
+PRE-LOADED TEMPLATES (minimum 100):
+
+FOR IMAGES (20+ templates):
+1. Professional Portrait Photography
+   - Photorealistic human portrait, professional studio setup
+2. Minimalist Logo Design
+   - Clean, modern, scalable vector logo
+3. Watercolor Children's Book Illustration
+   - Soft, whimsical, storytelling art
+4. Concept Art for Video Games
+   - Detailed environment or character design
+5. E-commerce Product Photography
+   - Clean background, multiple angles, professional lighting
+6. Futuristic Architecture
+   - Innovative buildings, sci-fi elements
+7. Cinematic Landscape Photography
+   - Epic natural scenery, dramatic lighting
+8. Anime/Manga Character Design
+   - Detailed character with backstory
+9. Educational Infographic
+   - Clear data visualization, informative
+10. Abstract Modern Art
+    - Non-representational, emotional, colorful
+11. Food Photography (Mouthwatering)
+12. Fashion Editorial Shoot
+13. Surreal Digital Art
+14. Realistic Pet Portrait
+15. Vintage Poster Design
+16. 3D Product Rendering
+17. Tattoo Design
+18. Book Cover Art
+19. Isometric Illustration
+20. Pixel Art Game Assets
+
+FOR VIDEOS (15+ templates):
+1. Explainer Video (Animated)
+   - 60-90 seconds, educational, engaging
+2. 30-Second Commercial
+   - Product advertisement, call-to-action
+3. Tutorial / How-To Video
+   - Step-by-step instructions, clear demonstrations
+4. YouTube Intro/Outro
+   - Branded animation, 5-10 seconds
+5. Product Demo 360°
+   - Rotating product view, features highlighted
+6. Vlog Opening Sequence
+   - Personal brand, energetic, hook
+7. Logo Animation
+   - 3-5 seconds, professional reveal
+8. Social Media Reel
+   - 15-60 seconds, vertical format, trending
+9. Documentary-Style Narrative
+   - Storytelling, B-roll, interviews
+10. Motion Graphics Background
+11. Testimonial Video
+12. Event Recap Video
+13. Educational Course Intro
+14. App Demo Walkthrough
+15. Stop Motion Animation
+
+FOR WEBSITES (15+ templates):
+1. SaaS Landing Page (High Conversion)
+   - Hero, features, pricing, testimonials, CTA
+2. Professional Portfolio
+   - Showcase work, about, contact, case studies
+3. E-commerce Store
+   - Product catalog, cart, checkout, reviews
+4. Personal Blog
+   - Posts, categories, search, comments
+5. Restaurant Website
+   - Menu, reservations, gallery, location
+6. Corporate Website
+   - Services, team, case studies, contact
+7. One-Page Parallax Site
+   - Scrolling sections, smooth animations
+8. Online Course Platform
+   - Lessons, progress tracking, certificates
+9. Real Estate Listings
+   - Property search, filters, maps, agent contact
+10. Admin Dashboard
+    - Data visualization, tables, controls
+11. Job Board
+12. Event/Conference Website
+13. Non-Profit Organization
+14. Booking/Appointment System
+15. Social Network Profile Page
+
+FOR CODE (15+ templates):
+1. REST API (Full CRUD)
+   - Express.js, routes, controllers, validation
+2. Authentication System
+   - JWT, password hashing, protected routes
+3. Database Schema Design
+   - Relationships, indexes, constraints
+4. Data Processing Pipeline
+   - ETL, transformations, error handling
+5. Web Scraper
+   - Beautiful Soup/Puppeteer, pagination, export
+6. Automation Script
+   - Task scheduler, logging, error recovery
+7. Algorithm Implementation
+   - Sorting, searching, optimization with explanation
+8. Unit Test Suite
+   - Jest/Pytest, mock data, edge cases
+9. Code Refactoring
+   - Clean code principles, DRY, SOLID
+10. CLI Tool
+    - Argument parsing, help text, commands
+11. React Component Library
+12. WebSocket Chat Server
+13. Cron Job Scheduler
+14. API Integration Wrapper
+15. Performance Optimization
+
+FOR TEXT (20+ templates):
+1. SEO Blog Article (1500+ words)
+   - Keywords, headings, meta description
+2. LinkedIn Professional Post
+   - Engaging, value-driven, call-to-action
+3. Email Marketing Campaign
+   - Subject line, body, CTA, A/B variants
+4. Product Description (E-commerce)
+   - Features, benefits, specifications, SEO
+5. YouTube Video Script
+   - Hook, content, transitions, CTA
+6. Press Release
+   - Headline, summary, quotes, boilerplate
+7. Landing Page Copy
+   - Headline, subheadline, benefits, social proof
+8. Case Study
+   - Problem, solution, results, testimonial
+9. White Paper / Ebook Chapter
+   - Research-based, authoritative, structured
+10. Social Media Caption (Instagram/Facebook)
+11. Cold Email Outreach
+12. Job Description
+13. Resume / Cover Letter
+14. Terms of Service / Privacy Policy
+15. FAQ Section
+16. Newsletter Content
+17. Ad Copy (Google/Facebook)
+18. Podcast Episode Outline
+19. Customer Service Response Templates
+20. Brand Messaging Guide
+
+FOR AUDIO (10+ templates):
+1. Background Music (Upbeat / Calm / Epic)
+2. Podcast Intro/Outro Music
+3. Voiceover Script (Professional / Casual)
+4. Jingle for Brand
+5. Sound Effects Description
+6. Meditation/Relaxation Audio
+7. Audiobook Narration Style
+8. Radio Commercial Script
+9. Character Voice Description
+10. Ambient Soundscape
+
+FOR PRESENTATIONS (10+ templates):
+1. Startup Pitch Deck
+   - Problem, solution, market, team, financials
+2. Product Launch Presentation
+   - Features, benefits, demo, timeline
+3. Educational Lecture Slides
+   - Topic, subtopics, visuals, takeaways
+4. Sales Presentation
+   - Value proposition, case studies, pricing
+5. Company Overview
+   - Mission, values, team, achievements
+6. Quarterly Business Review
+   - KPIs, progress, challenges, next steps
+7. Training Workshop Slides
+   - Learning objectives, activities, resources
+8. Conference Talk
+   - Title slide, agenda, content, Q&A
+9. Marketing Campaign Brief
+   - Goals, audience, channels, timeline
+10. Project Status Update
+
+FOR MARKETING (10+ templates):
+1. Facebook Ad Campaign
+   - Headline, body, image description, targeting
+2. Google Ads Copy
+   - Headlines (multiple), descriptions, extensions
+3. Email Drip Campaign (5 emails)
+   - Welcome, value, nurture, offer, closing
+4. Instagram Carousel Post
+   - 10 slides, storytelling, swipe-worthy
+5. Landing Page Headline & Copy
+   - Above-fold, benefits, CTA
+6. Influencer Partnership Brief
+   - Brand message, deliverables, compensation
+7. Content Marketing Plan
+   - Topics, formats, distribution, timeline
+8. Retargeting Ad Sequence
+   - Awareness, consideration, conversion stages
+9. Brand Voice Guidelines
+   - Tone, language, do's and don'ts
+10. Customer Persona
+
+FOR EDUCATION (10+ templates):
+1. Lesson Plan (K-12)
+   - Objectives, activities, assessment, materials
+2. Quiz/Test Questions
+   - Multiple choice, short answer, essay
+3. Study Guide
+   - Key concepts, summaries, practice questions
+4. Course Syllabus
+   - Overview, schedule, grading, policies
+5. Interactive Worksheet
+   - Exercises, problems, answer key
+6. Educational Video Script
+   - Intro, main content, recap, resources
+7. Assignment Rubric
+   - Criteria, levels, point values
+8. Flashcard Set
+   - Terms and definitions
+9. Research Paper Outline
+   - Thesis, arguments, sources, conclusion
+10. Parent-Teacher Communication
+
+Template Creation Feature:
+- "Create New Template" button
+- Form fields:
+  * Template name
+  * Category selection
+  * Description
+  * Template content (with variable syntax {{var}})
+  * Variables list (define each placeholder)
+  * Tags
+  * Visibility (Private / Public)
+- Save as draft
+- Publish to community (Premium)
+- Edit/Delete own templates
+
+5. PROMPT HISTORY & MANAGEMENT
+------------------------------
+
+View Options:
+- Table view (compact, sortable)
+- Card view (visual, detailed)
+- Timeline view (chronological)
+
+Filters (sidebar or top bar):
+- Date range: Today, This Week, This Month, Custom
+- Category: All or specific
+- AI Engine Used: All, OpenAI, Gemini, Claude
+- Favorites Only: Toggle
+- Status: All, Draft, Generated, Tested
+- Tags: Multi-select
+
+Search:
+- Full-text search across input and generated prompts
+- Keyword highlighting in results
+- Search suggestions
+
+Sorting:
+- Most Recent (default)
+- Oldest First
+- Most Used
+- Highest Rated
+- Alphabetical
+
+Bulk Actions:
+- Select multiple prompts (checkboxes)
+- Export selected (ZIP file)
+- Delete selected (with confirmation)
+- Tag selected
+- Move to folder (Premium)
+
+Individual Prompt View:
+Card or Modal with:
+- Category badge
+- Input text (original idea)
+- Generated prompt (formatted)
+- AI engine used (with icon)
+- Settings used (expandable)
+- Date and time created
+- Edit count (number of iterations)
+- Usage count (how many times opened)
+- Test results (if tested with API)
+- Personal notes (editable textarea)
+- Custom tags (add/remove)
+- Rating (1-5 stars, for personal reference)
+- Actions:
+  * View Details
+  * Edit/Regenerate
+  * Copy Prompt
+  * Test with API
+  * Export
+  * Duplicate
+  * Delete (with confirmation)
+  * Share
+
+STATISTICS & ANALYTICS DASHBOARD:
+
+Overview Cards:
+- Total Prompts Created
+- This Month
+- Success Rate (if user rates prompts)
+- Most Used Category
+- Favorite AI Engine
+
+Charts:
+1. Prompts Created Over Time (Line Chart)
+   - Daily/Weekly/Monthly view
+   - Compare with previous period
+   
+2. Category Distribution (Pie Chart)
+   - Shows which types of content most created
+   
+3. AI Engine Usage (Bar Chart)
+   - OpenAI vs Gemini vs Claude
+   
+4. Success Rate by Category (Horizontal Bar Chart)
+   - If user rates prompts, shows which categories have best success
+   
+5. Most Used Tags (Word Cloud)
+   - Frequency-based sizing
+   
+6. Creation Time Analysis
+   - Average time spent per prompt
+   - Peak creation hours/days
+
+Insights Section:
+- "You're most productive on [day] at [time]"
+- "Your most successful category is [category]"
+- "Try exploring [underused category]"
+- "Your prompt quality improved X% this month"
+
+Export Options:
+- CSV export of all data
+- JSON export
+- PDF report (pretty formatted)
+
+6. KNOWLEDGE BASE / LEARNING CENTER
+-----------------------------------
+
+Navigation:
+- Sidebar with categories
+- Search bar
+- "Beginner", "Intermediate", "Advanced" filters
+- Bookmark system
+
+Content Structure:
+
+SECTION 1: FUNDAMENTALS
+- What is Prompt Engineering?
+- Why Detailed Prompts Matter
+- Basic Prompt Structure
+- Common Mistakes to Avoid
+- The Art of Specificity
+- Context and Constraints
+- Examples: Good vs Bad Prompts
+
+SECTION 2: ADVANCED TECHNIQUES
+- Few-Shot Learning (with examples)
+- Zero-Shot Prompting
+- Chain-of-Thought Reasoning
+- Role/Persona Assignment
+- Delimiters and Structuring
+- Negative Prompting
+- Iterative Refinement
+- Multi-Step Prompts
+- Prompt Chaining
+- Tree of Thoughts
+
+SECTION 3: PLATFORM-SPECIFIC BEST PRACTICES
+
+**OPENAI / CHATGPT:**
+Based on official documentation:
+- Be specific and descriptive
+- Use examples for desired output format (few-shot)
+- System prompts for context
+- Temperature: lower for precision, higher for creativity
+- Structured outputs with JSON mode
+- "Think step by step" for reasoning tasks
+- Provide positive instructions (what to do, not what not to do)
+- Use delimiters (""", ```, ###) for clarity
+- Split complex tasks into subtasks
+- Give the model time to "think"
+- Test and iterate
+
+**GOOGLE GEMINI:**
+Based on Gemini documentation:
+- Be precise and direct
+- Use consistent structure (XML or Markdown)
+- Define all ambiguous parameters
+- Control output length explicitly
+- Place important context first
+- Use anchor phrases to reference previous content
+- Leverage thinking capabilities for complex tasks
+- Temperature default: 1.0 (adjust based on needs)
+- Multimodal: combine text with images effectively
+- Avoid persuasive language in prompts
+- Structured output with JSON schema
+
+**ANTHROPIC CLAUDE:**
+Based on Claude documentation:
+- Extreme clarity and specificity
+- Assign clear roles/personas
+- Use XML tags for structure (<instructions>, <context>, <examples>)
+- Prefill for format control
+- Few-shot prompting with examples
+- "Think step by step" for complex reasoning
+- Constitutional AI: include ethical guidelines
+- Long context: leverage 200k token window
+- Avoid vague or open-ended instructions
+- Positive framing
+
+**CURSOR AI:**
+Based on Cursor best practices:
+- Minimal, focused context
+- Use @ to reference files
+- Notepads for complex feature specifications
+- .cursorrules for persistent guidelines
+- Close irrelevant tabs/files
+- Test-driven development approach
+- Iterate with specific feedback
+- Enable debugging/logging
+- One feature at a time
+
+**REPLIT AI:**
+Based on Replit Agent best practices:
+- Break down into small, incremental steps
+- Specify tech stack clearly
+- "Build incrementally" approach
+- Provide clear context upfront
+- Use positive instructions
+- Iterate and refine continuously
+- Use checkpoints for versioning
+- Leverage native integrations
+
+SECTION 4: CONTENT TYPE-SPECIFIC GUIDES
+
+For Images:
+- Style and medium
+- Composition and framing
+- Lighting and atmosphere
+- Camera settings and lens
+- Color palette
+- Mood and emotion
+- Subject details
+- Background elements
+- Quality and resolution
+- Negative prompts (what to avoid)
+
+For Videos:
+- Scene description
+- Camera movement
+- Pacing and timing
+- Transitions
+- Audio/music style
+- Visual effects
+- Color grading
+- Shot types
+- Duration specifications
+
+For Websites:
+- Design style
+- Color scheme
+- Layout structure
+- Functionality requirements
+- Target audience
+- Responsive design
+- Performance needs
+- SEO considerations
+- Tech stack
+
+For Code:
+- Language and framework
+- Function purpose
+- Input/output specifications
+- Error handling
+- Edge cases
+- Code style/conventions
+- Comments and documentation
+- Testing requirements
+- Performance considerations
+
+For Text:
+- Tone and voice
+- Target audience
+- Length and format
+- Key points to cover
+- SEO keywords
+- Call to action
+- Style guide references
+- Examples of desired output
+
+SECTION 5: PROMPT PATTERNS LIBRARY
+- The Recipe Pattern
+- The Template Pattern
+- The Persona Pattern
+- The Audience Pedago Pattern
+- The Flipped Interaction Pattern
+- The Game Play Pattern
+- The Infinite Generation Pattern
+- The Visualization Generator
+- The Meta Language Creation
+
+SECTION 6: EXAMPLES & CASE STUDIES
+- 50+ Real-world examples
+- Before & After comparisons
+- Success stories
+- Common pitfalls explained
+- Expert interviews (if available)
+
+Interactive Elements:
+- Quiz: "Test Your Knowledge"
+- Practice exercises
+- Prompt challenges
+- Community submissions
+- Rating system for articles
+- Comments/discussions (Premium)
+- Bookmark favorite articles
+- Progress tracking (which articles read)
+
+7. SETTINGS & PREFERENCES
+-------------------------
+
+PROFILE TAB:
+- Avatar upload (crop tool)
+- Display name
+- Username (unique)
+- Email (verified badge)
+- Bio (150 chars)
+- Location
+- Website/social links
+- Member since date
+- Public profile toggle
+
+API KEYS TAB:
+Security notice: "Your API keys are encrypted and never shared"
+
+For each API (OpenAI, Gemini, Claude):
+- Label: "OpenAI API Key"
+- Input field (type=password, show/hide toggle)
+- Status indicator: ✅ Valid / ❌ Invalid / ⏳ Not tested
+- "Test Connection" button
+- Usage statistics:
+  * Calls made this month
+  * Estimated cost
+  * Rate limits remaining
+- "How to get your API key" link (instructions)
+- "Delete key" button (with confirmation)
+
+Cost Tracker:
+- Monthly spending by API
+- Cost per prompt average
+- Budget alerts (set threshold)
+- Detailed breakdown
+
+PREFERENCES TAB:
+- Default AI Engine: Dropdown (OpenAI/Gemini/Claude)
+- Default Model: Dropdown (based on selected engine)
+- Language: Dropdown (Portuguese, English, Spanish)
+- Theme: Radio buttons (Light / Dark / Auto)
+- Notifications:
+  * Email notifications: Toggle
+  * In-app notifications: Toggle
+  * Frequency: Dropdown (Immediately, Daily digest, Weekly digest)
+  * Types: Checkboxes (New features, Tips, Community, Billing)
+- Keyboard Shortcuts: Toggle enable/disable
+  * Show shortcut reference (modal with list)
+- Auto-save: Toggle (save drafts automatically)
+- Default Export Format: Dropdown (TXT, JSON, Markdown, PDF)
+- Results per page: Number input (10, 25, 50, 100)
+- Confirmation dialogs: Checkboxes (which actions require confirmation)
+
+PLAN & BILLING TAB (if implementing monetization):
+Current Plan Card:
+- Plan name (Free/Premium)
+- Features list
+- Usage this month (progress bar)
+- Next billing date
+- Amount
+- "Upgrade" or "Manage Plan" button
+
+Payment Method:
+- Card information (masked)
+- "Update payment method" button
+- Billing address
+
+Billing History:
+- Table of past invoices
+- Download PDF receipt
+- Date, amount, status
+
+Upgrade/Downgrade:
+- Plan comparison table
+- Feature differences highlighted
+- Pricing (monthly/yearly toggle)
+- "Switch Plan" buttons
+
+INTEGRATIONS TAB:
+- Webhooks:
+  * "Create Webhook" button
+  * URL input
+  * Events to trigger: Checkboxes (prompt created, prompt updated, etc.)
+  * List of existing webhooks
+  * Test webhook feature
+  
+- Third-party Integrations:
+  * Zapier: Connect button + instructions
+  * Google Drive: Auto-export toggle
+  * Notion: Database integration
+  * Slack: Notification bot
+  * Discord: Webhook notifications
+  
+- Developer API:
+  * API key for your app's API
+  * Documentation link
+  * Rate limits
+  * Usage statistics
+
+PRIVACY & SECURITY TAB:
+- Account deletion (with confirmation and explanation)
+- Data export (download all your data)
+- Login history (IP, device, date)
+- Active sessions (revoke access)
+- Two-factor authentication: Toggle
+- Password change
+- Privacy settings:
+  * Profile visibility: Public/Private
+  * Show statistics publicly: Toggle
+  * Allow community to see my templates: Toggle
+
+8. SPECIAL FEATURES
+-------------------
+
+PROMPT COMPARISON MODE (Premium):
+- Enable toggle: "Compare Multiple AIs"
+- Select 2-3 AI engines
+- Generate with same input
+- Split-screen or tabbed view showing:
+  * Each AI's generated prompt
+  * Side-by-side comparison
+  * Differences highlighted
+  * Quality scores for each
+- Voting: "Which one is better?"
+- Hybrid creation: "Combine best parts"
+- Save comparison results
+- Export comparison report
+
+COLLABORATIVE PROMPTS (Premium):
+- "Share for Collaboration" button
+- Generate shareable link with permissions:
+  * View only
+  * Can comment
+  * Can edit
+- Real-time collaboration (like Google Docs)
+- Comments sidebar:
+  * Add comments to specific lines
+  * Reply to comments
+  * Resolve comments
+- Suggestion mode:
+  * Users can suggest edits
+  * Owner approves/rejects
+- Version history with contributors listed
+- Notification when someone edits/comments
+
+PROMPT OPTIMIZER AI:
+- "Analyze This Prompt" button
+- Input: User's manually written prompt
+- Output:
+  * Overall quality score (1-100)
+  * Detailed feedback:
+    - Clarity: X/10
+    - Specificity: X/10
+    - Structure: X/10
+    - Completeness: X/10
+  * Specific suggestions:
+    - "Add more detail about lighting"
+    - "Include examples for better results"
+    - "Use section delimiters"
+  * Optimized version of prompt
+  * Before/After comparison
+- Apply suggestions: One-click improvement
+- Learn from feedback
+
+A/B TESTING FOR PROMPTS (Premium):
+- "Create A/B Test" button
+- Input: Two variations of a prompt
+- Action: Generate actual outputs with target AI
+- Display:
+  * Side-by-side results
+  * Metrics (if measurable)
+  * Statistical significance indicator
+- Voting: "Which result is better?"
+- Save winning version
+- Test history and results
+
+SCHEDULED PROMPTS (Premium):
+- "Schedule Generation" button
+- Frequency: Daily, Weekly, Monthly, Custom
+- Time: Time picker
+- Prompt to run: Select from history or create new
+- Delivery: Email, Save to history, Webhook
+- Manage scheduled prompts:
+  * List of active schedules
+  * Pause/Resume
+  * Edit schedule
+  * View execution history
+  * Delete schedule
+
+COMMUNITY FEATURES (Premium):
+- Public Gallery:
+  * Browse prompts shared by community
+  * Filter by category, rating, date
+  * Search
+  * Preview before using
+- Upvote/Downvote system
+- Comments and discussions
+- Follow users
+- Notifications when followed users share new prompts
+- Trending section:
+  * Most popular this week
+  * Rising stars
+  * Top-rated of all time
+- Personal Collections:
+  * Create collections of favorite community prompts
+  * Share your collections
+- Leaderboard:
+  * Top contributors
+  * Most helpful
+  * Most creative prompts
+- Badges/Achievements:
+  * "First Prompt" badge
+  * "100 Prompts Created" badge
+  * "Community Helper" badge (for helping others)
+  * "Perfectionist" (high average quality scores)
+
+SMART SUGGESTIONS:
+As user types input, show real-time suggestions:
+- "Consider adding information about lighting"
+- "What's the target audience?"
+- "Have you specified the style?"
+- Based on category and common missing elements
+
+PROMPT TEMPLATES FROM HISTORY:
+- "Save as Template" option in prompt detail
+- Automatically extract variables from text
+- Suggest variable names
+- Preview with sample values
+- Add to personal template library
+
+QUALITY CONTROL FEEDBACK LOOP:
+After generating a prompt:
+- "Did this work well?" (thumbs up/down)
+- If thumbs down: "What went wrong?"
+  * Not specific enough
+  * Too complex
+  * Wrong format for platform
+  * Other (text input)
+- Use feedback to improve future generations
+- Machine learning optimization (long-term feature)
+
+========================================
+DATABASE SCHEMA (Replit Database)
+========================================
+
+Store data in Replit's key-value database using JSON:
+
+USER KEYS:
+Key: users:{userId}
+Value:
+{
+  "id": "user_123",
+  "username": "johndoe",
+  "email": "john@example.com",
+  "plan": "premium",
+  "apiKeys": {
+    "openai": "encrypted_key_abc123",
+    "gemini": "encrypted_key_def456",
+    "claude": "encrypted_key_ghi789"
+  },
+  "preferences": {
+    "defaultAI": "openai",
+    "defaultModel": "gpt-4",
+    "theme": "dark",
+    "language": "en",
+    "notifications": {
+      "email": true,
+      "inApp": true,
+      "frequency": "daily"
+    }
+  },
+  "stats": {
+    "totalPrompts": 150,
+    "favoriteCount": 25,
+    "createdAt": "2024-01-15T10:30:00Z",
+    "lastActive": "2024-12-16T08:45:00Z"
+  }
+}
+
+PROMPT KEYS:
+Key: prompts:{userId}:{promptId}
+Value:
+{
+  "id": "prompt_456",
+  "userId": "user_123",
+  "category": "image",
+  "input": {
+    "text": "A cat sitting on a windowsill",
+    "mode": "text",
+    "additionalFields": {
+      "style": "photorealistic",
+      "audience": "general",
+      "tone": "neutral"
+    }
+  },
+  "generatedPrompt": "Create a photorealistic...",
+  "aiEngine": "openai",
+  "model": "gpt-4",
+  "settings": {
+    "temperature": 0.7,
+    "maxTokens": 1000
+  },
+  "qualityScores": {
+    "completeness": 85,
+    "specificity": 90,
+    "structure": 95,
+    "compatibility": 88,
+    "overall": 89.5
+  },
+  "createdAt": "2024-12-16T09:00:00Z",
+  "updatedAt": "2024-12-16T09:15:00Z",
+  "favorite": true,
+  "tags": ["photography", "animals"],
+  "rating": 5,
+  "useCount": 3,
+  "notes": "Great prompt for realistic cat photos",
+  "testResults": {
+    "tested": true,
+    "output": "...",
+    "success": true
+  },
+  "versions": [
+    {
+      "version": 1,
+      "prompt": "original prompt",
+      "timestamp": "2024-12-16T09:00:00Z"
+    }
+  ]
+}
+
+TEMPLATE KEYS:
+Key: templates:{templateId}
+Value:
+{
+  "id": "template_789",
+  "name": "Professional Portrait Photography",
+  "description": "Creates detailed prompts for realistic portrait photos",
+  "category": "image",
+  "content": "Create a {{style}} portrait photograph of {{subject}}...",
+  "variables": [
+    {
+      "name": "style",
+      "description": "Photography style",
+      "example": "professional studio",
+      "required": true
+    },
+    {
+      "name": "subject",
+      "description": "Person or character to photograph",
+      "example": "young professional woman",
+      "required": true
+    }
+  ],
+  "author": "user_123",
+  "createdAt": "2024-12-01T10:00:00Z",
+  "isPublic": true,
+  "rating": 4.5,
+  "ratingCount": 120,
+  "useCount": 500,
+  "tags": ["photography", "portrait", "professional"]
+}
+
+HISTORY LIST KEYS:
+Key: history:{userId}:list
+Value: ["prompt_456", "prompt_457", "prompt_458", ...]
+
+FAVORITES LIST KEYS:
+Key: favorites:{userId}:list
+Value: ["prompt_456", "prompt_460", "prompt_462", ...]
+
+STATISTICS KEYS:
+Key: stats:{userId}
+Value:
+{
+  "totalPrompts": 150,
+  "byCategory": {
+    "image": 60,
+    "video": 20,
+    "website": 30,
+    "code": 25,
+    "text": 15
+  },
+  "byAI": {
+    "openai": 80,
+    "gemini": 40,
+    "claude": 30
+  },
+  "successRate": 92.5,
+  "avgCreationTime": 180,
+  "peakHours": [9, 14, 20],
+  "peakDays": ["Monday", "Wednesday", "Friday"]
+}
+
+KNOWLEDGE BASE KEYS:
+Key: knowledge:articles
+Value: [array of article objects]
+
+========================================
+API INTEGRATIONS
+========================================
+
+Create service classes for each AI provider:
+
+OPENAI SERVICE:
+- generatePrompt(input, category, settings)
+- testPrompt(prompt, type)
+- transcribeAudio(audioFile)
+- analyzePromptQuality(prompt)
+- estimateCost(settings)
+
+GEMINI SERVICE:
+- generatePrompt(input, category, settings)
+- testPrompt(prompt, type)
+- multimodalInput(text, images)
+- structuredOutput(prompt, schema)
+
+CLAUDE SERVICE:
+- generatePrompt(input, category, settings)
+- testPromptWithPrefill(prompt, prefill)
+- analyzePromptStructure(prompt)
+
+API PROXY LAYER (Backend):
+- Centralize all API calls
+- Hide API keys from frontend
+- Implement rate limiting per user
+- Cache responses (5 minutes)
+- Track usage and costs
+- Unified error handling
+- Response transformation
+
+Rate Limiting Strategy:
+- Free users: 50 requests/month, 5/day, 2/hour
+- Premium users: 1000 requests/month, 100/day, 20/hour
+- Return 429 status with retry-after header
+- Display user-friendly message with upgrade prompt
+
+Error Handling:
+- Network errors: Retry with exponential backoff
+- API errors: Parse and display helpful messages
+- Rate limit: Show usage stats and upgrade option
+- Invalid key: Guide user to settings
+- Timeout: Increase timeout and retry
+
+========================================
+DESIGN SPECIFICATIONS
+========================================
+
+COLOR PALETTE:
+Primary Colors:
+- Indigo-600: #4F46E5 (primary actions, links)
+- Indigo-700: #4338CA (hover states)
+- Indigo-50: #EEF2FF (subtle backgrounds)
+
+Secondary Colors:
+- Purple-600: #9333EA (accents, premium features)
+- Purple-700: #7E22CE (hover)
+
+Success/Error/Warning:
+- Green-600: #16A34A (success)
+- Red-600: #DC2626 (errors)
+- Amber-600: #D97706 (warnings)
+- Blue-600: #2563EB (info)
+
+Neutral:
+- Slate-900: #0F172A (dark text)
+- Slate-700: #334155 (secondary text)
+- Slate-400: #94A3B8 (muted text)
+- Slate-200: #E2E8F0 (borders)
+- Slate-50: #F8FAFC (light background)
+
+TYPOGRAPHY:
+- Font Family: Inter (Google Fonts)
+- Headings: Inter Bold (700)
+- Body: Inter Regular (400)
+- Emphasis: Inter Semi-Bold (600)
+- Code: 'Fira Code' or 'Courier New' monospace
+
+Font Sizes:
+- 3xl: 30px (page titles)
+- 2xl: 24px (section headers)
+- xl: 20px (card titles)
+- lg: 18px (emphasized text)
+- base: 16px (body text)
+- sm: 14px (helper text)
+- xs: 12px (captions)
+
+SPACING SYSTEM:
+Use Tailwind's spacing scale (0, 1, 2, 3, 4, 5, 6, 8, 10, 12, 16, 20, 24, 32)
+- Components: p-4, p-6, p-8
+- Sections: space-y-8, space-y-12
+- Margins: mt-4, mb-6, mx-auto
+
+COMPONENT LIBRARY (shadcn/ui):
+Install and use these components:
+- Button (primary, secondary, outline, ghost, destructive variants)
+- Card (with header, content, footer)
+- Input (text, email, password, search)
+- Textarea (expandable)
+- Select / Dropdown
+- Dialog / Modal
+- Sheet (slide-in panel)
+- Tabs
+- Badge
+- Avatar
+- Toast (notifications)
+- Progress bar
+- Skeleton loader
+- Command palette
+- Combobox (searchable select)
+- Accordion
+- Collapsible
+- Table / DataTable
+- Form components (Label, Checkbox, Radio, Switch)
+- Slider
+- Toggle
+- Tooltip
+- Hover Card
+- Scroll Area
+- Separator
+- Context Menu
+- Dropdown Menu
+
+ANIMATIONS (Framer Motion):
+- Page transitions: Fade + slide
+- Card hover: Subtle lift + shadow
+- Button hover: Scale 1.02
+- Loading: Skeleton shimmer
+- Success: Confetti explosion (on prompt creation)
+- Micro-interactions: Smooth 150-300ms transitions
+- Stagger animations for lists
+- Fade in on scroll for content sections
+
+RESPONSIVE DESIGN:
+Breakpoints:
+- sm: 640px
+- md: 768px
+- lg: 1024px
+- xl: 1280px
+- 2xl: 1536px
+
+Mobile (<768px):
+- Single column layout
+- Hamburger menu
+- Bottom navigation (fixed)
+- Larger touch targets (min 44px)
+- Collapsible filters
+- Swipe gestures for navigation
+
+Tablet (768-1024px):
+- Two-column layout where appropriate
+- Collapsible sidebar
+- Larger buttons and inputs
+
+Desktop (>1024px):
+- Three-column layouts
+- Persistent sidebar
+- Hover effects
+- Keyboard shortcuts
+
+ACCESSIBILITY:
+- Semantic HTML (nav, main, section, article, aside)
+- ARIA labels for interactive elements
+- Keyboard navigation (Tab, Enter, Esc, Arrow keys)
+- Focus indicators (visible outline)
+- Alt text for images
+- Color contrast ratio ≥ 4.5:1
+- Screen reader support
+- Skip navigation link
+- Proper heading hierarchy (h1 > h2 > h3)
+
+========================================
+PERFORMANCE OPTIMIZATION
+========================================
+
+Code Splitting:
+- Use React.lazy() for route-based splitting
+- Lazy load heavy components (charts, editors)
+- Dynamic imports for features
+
+Image Optimization:
+- Lazy loading (loading="lazy")
+- Responsive images (srcset)
+- WebP format with fallbacks
+- Compress images (< 200KB)
+
+Caching Strategy:
+- Cache API responses (5 min for prompts)
+- LocalStorage for user preferences
+- Service Worker for offline support (PWA)
+- Memoize expensive computations (useMemo)
+
+Debouncing/Throttling:
+- Search input: 300ms debounce
+- Scroll events: 100ms throttle
+- Window resize: 150ms throttle
+- Auto-save: 2000ms debounce
+
+React Optimization:
+- Use React.memo for pure components
+- useCallback for event handlers
+- useMemo for computed values
+- Virtual scrolling for long lists (react-window)
+- Pagination for large datasets
+
+Bundle Size:
+- Remove unused code (tree-shaking)
+- Analyze bundle with webpack-bundle-analyzer
+- Use production build
+- Gzip compression
+- Code minification
+
+========================================
+SECURITY MEASURES
+========================================
+
+API Key Security:
+- Store encrypted in database
+- Never expose in frontend code
+- Use environment variables on backend
+- Rotate keys periodically
+- Implement key revocation
+
+Input Validation:
+- Sanitize all user inputs (DOMPurify)
+- Validate on both client and server
+- Prevent XSS attacks
+- SQL injection prevention (if using SQL)
+- File upload validation (type, size)
+
+Authentication:
+- Use Replit Auth (secure by default)
+- Session management
+- Token expiration (24 hours)
+- Refresh token flow
+- Logout on all devices option
+
+Rate Limiting:
+- express-rate-limit middleware
+- Per-user limits
+- IP-based limits for public endpoints
+- Graceful degradation
+
+HTTPS:
+- Enforce HTTPS in production
+- Secure cookies (httpOnly, secure, sameSite)
+
+CORS:
+- Configure allowed origins
+- Whitelist specific domains
+- Credentials: include
+
+Content Security Policy:
+- Restrict resource loading
+- Prevent inline scripts
+- Report violations
+
+========================================
+ERROR HANDLING
+========================================
+
+Frontend Error Boundaries:
+- Wrap entire app in error boundary
+- Catch component errors
+- Display friendly error page
+- Report to analytics/Sentry
+- Offer recovery options
+
+API Error Handling:
+- Try-catch all async operations
+- User-friendly error messages
+- Don't expose technical details
+- Provide actionable solutions
+- Log errors for debugging
+
+Network Errors:
+- Detect offline status
+- Retry with exponential backoff
+- Cache failed requests
+- Sync when back online
+
+Validation Errors:
+- Inline form validation
+- Clear error messages
+- Highlight problematic fields
+- Prevent submission until valid
+
+========================================
+SYSTEM PROMPTS FOR AI APIS
+========================================
+
+Use these system prompts when calling AI APIs:
+
+FOR OPENAI API:
+```
+You are an expert prompt engineer with deep knowledge of best practices for ALL AI platforms (OpenAI, Gemini, Claude, Midjourney, Stable Diffusion, etc.).
+
+Your mission: Transform simple user ideas into highly detailed, structured, and optimized prompts.
+
+CRITICAL RULES:
+1. Always be specific and direct
+2. Include examples when appropriate (few-shot learning)
+3. Structure with clear delimiters (### sections, """, ---)
+4. Define role/persona when relevant
+5. Use "think step by step" for complex tasks
+6. Adapt style to target platform
+7. Include clear constraints and limits
+8. Specify desired output format
+9. Add necessary context (not excessive)
+10. For images: style, composition, lighting, camera, mood, technical specs
+
+Current Category: {{category}}
+Target Platform: {{platform}}
+User Input: {{userInput}}
+Additional Context: {{additionalFields}}
+
+Generate an optimized prompt following best practices for {{platform}}.
+Format the prompt professionally with clear structure.
+```
+
+FOR GEMINI API:
+```
+You are a specialized prompt engineering assistant.
+Objective: Create optimized, detailed prompts.
+
+<instructions>
+1. Be precise and direct
+2. Use consistent structure with XML tags
+3. Define all ambiguous parameters
+4. Place important context first
+5. Adapt for platform: {{platform}}
+6. Leverage multimodal capabilities when applicable
+</instructions>
+
+<context>
+Category: {{category}}
+User Input: {{userInput}}
+Target Platform: {{platform}}
+Additional Requirements: {{additionalFields}}
+</context>
+
+<task>
+Generate a professional, detailed prompt optimized for {{platform}}.
+</task>
+```
+
+FOR CLAUDE API:
+```
+You are an expert prompt engineering assistant.
+
+<role>
+You specialize in crafting highly detailed, structured prompts for various AI platforms and content types.
+</role>
+
+<instructions>
+1. Be extremely specific and clear
+2. Use XML tags for structure
+3. Assign appropriate personas/roles
+4. Include examples when helpful
+5. Break complex tasks into steps
+6. Adapt to platform: {{platform}}
+7. Define success criteria explicitly
+8. Consider constraints and limitations
+</instructions>
+
+<input>
+Category: {{category}}
+User idea: {{userInput}}
+Target platform: {{platform}}
+Requirements: {{additionalFields}}
+</input>
+
+<task>
+Generate an optimized, detailed prompt following best practices for {{platform}}.
+Ensure the prompt is comprehensive, actionable, and well-structured.
+</task>
+```
+
+========================================
+TESTING & QUALITY ASSURANCE
+========================================
+
+Unit Testing:
+- Jest for React components
+- Test utilities: React Testing Library
+- Test API integrations (mock responses)
+- Test database operations
+- Aim for 70%+ code coverage
+
+Integration Testing:
+- Test user flows end-to-end
+- Authentication flows
+- Prompt creation process
+- API integrations
+- Payment flows (if applicable)
+
+Manual Testing Checklist:
+- [ ] Registration/Login works
+- [ ] All categories selectable
+- [ ] Text input saves correctly
+- [ ] Voice recording works
+- [ ] File upload processes
+- [ ] AI selection changes model
+- [ ] Prompt generates successfully
+- [ ] Quality scores calculate
+- [ ] Copy to clipboard works
+- [ ] Save to favorites works
+- [ ] History displays correctly
+- [ ] Filters/search work
+- [ ] Templates load and work
+- [ ] Settings save properly
+- [ ] Export functions work
+- [ ] Responsive on mobile
+- [ ] Dark mode works
+- [ ] All links functional
+- [ ] Error states display properly
+- [ ] Loading states show
+- [ ] Notifications appear
+
+Browser Testing:
+- Chrome (latest)
+- Firefox (latest)
+- Safari (latest)
+- Edge (latest)
+- Mobile Safari (iOS)
+- Chrome Mobile (Android)
+
+Performance Testing:
+- Page load time < 3 seconds
+- Time to Interactive < 5 seconds
+- Lighthouse score > 90
+- Core Web Vitals passing
+
+========================================
+DEPLOYMENT CONFIGURATION
+========================================
+
+Environment Variables (in Replit):
+```
+NODE_ENV=production
+PORT=3000
+REPLIT_DB_URL=<automatic>
+OPENAI_API_KEY=<user_provided_or_stored_encrypted>
+GEMINI_API_KEY=<user_provided_or_stored_encrypted>
+CLAUDE_API_KEY=<user_provided_or_stored_encrypted>
+SESSION_SECRET=<random_secure_string>
+ENCRYPTION_KEY=<for_encrypting_api_keys>
+```
+
+Replit Deployment Settings:
+- Auto-deploy on push to main
+- Custom domain configuration
+- HTTPS enabled (automatic)
+- Environment variables secured
+
+Monitoring:
+- Integrate Google Analytics or Plausible
+- Error tracking (Sentry or similar)
+- Uptime monitoring
+- API usage tracking
+- User analytics
+
+========================================
+PROGRESSIVE WEB APP (PWA) FEATURES
+========================================
+
+Service Worker:
+- Cache static assets
+- Offline fallback page
+- Background sync for drafts
+- Push notifications (Premium)
+
+Manifest.json:
+```json
+{
+  "name": "PromptCraft AI",
+  "short_name": "PromptCraft",
+  "description": "AI-powered prompt engineering assistant",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#4F46E5",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
+```
+
+Install Prompt:
+- Show "Add to Home Screen" banner
+- Detect if already installed
+- Don't show repeatedly
+
+Offline Functionality:
+- View cached prompts
+- Edit drafts (sync when online)
+- Queue API calls
+- Show offline indicator
+
+========================================
+MONETIZATION STRATEGY (Optional)
+========================================
+
+Stripe Integration:
+- Checkout session for upgrades
+- Subscription management
+- Webhook handling
+- Invoice generation
+
+Pricing Structure:
+FREE PLAN:
+- 50 prompts/month
+- Basic templates (30)
+- 30-day history
+- Single AI engine
+- Community view only
+- $0/month
+
+PREMIUM PLAN:
+- Unlimited prompts
+- All templates (100+)
+- Unlimited history
+- All AI engines
+- A/B comparison
+- Advanced analytics
+- Priority support
+- Community features
+- Early access to new features
+- $19/month or $199/year (save 15%)
+
+PRO PLAN (Optional):
+- Everything in Premium
+- API access
+- White-label option
+- Team collaboration (5 seats)
+- Custom templates
+- Dedicated support
+- $49/month or $499/year
+
+Payment Flow:
+1. User clicks "Upgrade to Premium"
+2. Redirect to Stripe Checkout
+3. After payment, webhook updates user plan
+4. Redirect back with success message
+5. Unlock premium features immediately
+
+Trial Period:
+- 7-day free trial for Premium
+- No credit card required
+- Prompt to upgrade before trial ends
+- Downgrade to free automatically
+
+========================================
+ANALYTICS & METRICS
+========================================
+
+Track these events:
+- User registration
+- Prompt created (by category)
+- Template used
+- AI engine selected
+- Prompt exported
+- Prompt favorited
+- Search performed
+- Filter applied
+- Settings changed
+- Upgrade initiated
+- Payment completed
+- Error occurred
+
+KPIs to Monitor:
+- Daily Active Users (DAU)
+- Monthly Active Users (MAU)
+- Prompts created per user
+- Average session duration
+- Bounce rate
+- Conversion rate (Free → Premium)
+- Churn rate
+- User retention (D1, D7, D30)
+- Feature usage rates
+- API error rates
+- Page load times
+
+Dashboard for Admin:
+- Real-time users online
+- Total users (free/premium split)
+- Revenue metrics
+- Most popular categories
+- Most used AI engines
+- Error logs
+- User feedback
+
+========================================
+DOCUMENTATION
+========================================
+
+User Documentation:
+- Getting Started Guide
+- How to Create Your First Prompt
+- Understanding Quality Scores
+- Using Templates Effectively
+- Voice Input Tutorial
+- Best Practices by Category
+- FAQ
+- Troubleshooting Common Issues
+- Video Tutorials
+
+Developer Documentation (if offering API):
+- API Reference
+- Authentication
+- Rate Limits
+- Code Examples
+- SDKs (if available)
+- Changelog
+- Migration Guides
+
+Internal Documentation:
+- System architecture diagram
+- Database schema
+- API integration details
+- Deployment procedures
+- Troubleshooting guide
+- Contribution guidelines
+
+========================================
+FUTURE ENHANCEMENTS (Post-MVP)
+========================================
+
+Phase 2 Features:
+- Mobile native apps (iOS/Android)
+- Browser extension (quick prompt from anywhere)
+- Slack/Discord bot integration
+- WordPress plugin
+- Team workspaces
+- Prompt versioning (git-like)
+- Prompt marketplace (buy/sell templates)
+- AI-powered prompt suggestions while typing
+- Multi-language support (10+ languages)
+- Custom AI model integration
+- Bulk prompt generation
+- CSV import/export
+- API webhooks
+- Advanced analytics dashboard
+
+Phase 3 Features:
+- Machine learning for personalized suggestions
+- Prompt performance tracking (track actual results)
+- Integration with creative tools (Figma, Canva)
+- White-label solution for agencies
+- Enterprise plan with SSO
+- Advanced collaboration features
+- Prompt automation workflows
+- Custom AI training on user's prompts
+- Predictive prompt completion
+
+========================================
+IMPLEMENTATION TIMELINE
+========================================
+
+WEEK 1: Foundation
+- [ ] Project setup (React + TypeScript + Tailwind)
+- [ ] Replit Auth integration
+- [ ] Database setup and helpers
+- [ ] Basic routing
+- [ ] Layout components (Header, Sidebar, Footer)
+- [ ] Theme switcher (light/dark)
+- [ ] Basic styling system
+
+WEEK 2: Core Prompt Creation
+- [ ] Category selection interface
+- [ ] Text input mode
+- [ ] Voice input integration
+- [ ] File upload handler
+- [ ] AI engine selector
+- [ ] OpenAI API integration
+- [ ] Basic prompt generation
+
+WEEK 3: Advanced Creation & APIs
+- [ ] Gemini API integration
+- [ ] Claude API integration
+- [ ] Advanced settings panel
+- [ ] Quality score calculation
+- [ ] Refinement chat interface
+- [ ] Version history
+- [ ] Output display with actions
+
+WEEK 4: History & Templates
+- [ ] Prompt history page
+- [ ] Filters and search
+- [ ] Favorites system
+- [ ] Template library
+- [ ] 100 pre-loaded templates
+- [ ] Template usage
+- [ ] Template creation
+
+WEEK 5: Analytics & Special Features
+- [ ] Statistics dashboard
+- [ ] Charts and visualizations
+- [ ] Comparison mode
+- [ ] Prompt optimizer
+- [ ] A/B testing feature
+- [ ] Knowledge base content
+- [ ] Settings pages
+
+WEEK 6: Polish & Optimization
+- [ ] Animations and transitions
+- [ ] Loading states
+- [ ] Error handling
+- [ ] Mobile responsiveness
+- [ ] Performance optimization
+- [ ] Accessibility improvements
+- [ ] PWA features
+
+WEEK 7: Testing & Deployment
+- [ ] Comprehensive testing
+- [ ] Bug fixes
+- [ ] Documentation
+- [ ] Deploy to production
+- [ ] Setup monitoring
+- [ ] Marketing materials
+- [ ] Launch!
+
+========================================
+SUCCESS CRITERIA
+========================================
+
+The project is successful when:
+- [ ] Users can register/login smoothly
+- [ ] All 10 categories work perfectly
+- [ ] 3 input modes function correctly
+- [ ] All 3 AI integrations work
+- [ ] Prompts generate with high quality
+- [ ] History and favorites work flawlessly
+- [ ] 100+ templates are available and usable
+- [ ] Knowledge base is comprehensive
+- [ ] Mobile experience is excellent
+- [ ] Performance meets targets (Lighthouse > 90)
+- [ ] No critical bugs
+- [ ] User feedback is positive
+- [ ] Conversion rate > 5% (free to premium)
+
+========================================
+REPLIT AI INSTRUCTIONS
+========================================
+
+Dear Replit AI Agent,
+
+Please build this complete full-stack web application following these specifications:
+
+1. START by creating the project structure as outlined above
+2. INSTALL all necessary dependencies:
+   - Frontend: react, react-dom, react-router-dom, typescript, tailwindcss, framer-motion, lucide-react
+   - Backend: express, cors, helmet, express-rate-limit
+   - Utils: axios, zod, date-fns, recharts, papaparse
+   
+3. IMPLEMENT features in phases (Weeks 1-7)
+4. USE shadcn/ui components consistently
+5. FOLLOW the color palette and typography specifications
+6. ENSURE responsive design on all pages
+7. IMPLEMENT error handling everywhere
+8. ADD loading states for all async operations
+9. WRITE clean, well-commented code
+10. TEST each feature before moving to next
+
+Key Priorities:
+✅ Functionality first, polish later
+✅ User experience must be smooth
+✅ Code quality and maintainability
+✅ Performance optimization
+✅ Security best practices
+
+Code Style:
+- Functional React components (hooks)
+- TypeScript strict mode
+- Tailwind utility classes
+- Clear variable names
+- Comments for complex logic
+- Error boundaries
+
+Please confirm you understand all specifications and ask about any ambiguities before starting. Then, begin with Week 1 implementation.
+
+Let's build something amazing! 🚀
+
+========================================
+END OF SPECIFICATION
+========================================
